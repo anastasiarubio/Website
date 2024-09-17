@@ -44,3 +44,4 @@ jobs:
     - name: Verify Deployment
       run: |
         echo "Website deployed successfully to Azure Storage Account: ${{ secrets.AZURE_STORAGE_ACCOUNT_NAME }}"
+        
