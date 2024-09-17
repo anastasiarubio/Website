@@ -1,0 +1,46 @@
+name: Deploy Static Web App to Azure Blob Storage
+
+on:
+  # Trigger the workflow on pull requests to ensure CI
+  pull_request:
+    branches:
+      - main
+  # Trigger the workflow when code is pushed to the main branch
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Build and Deploy to Azure Storage
+    runs-on: ubuntu-latest
+
+    steps:
+    # Checkout the repository
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    # Build step (if needed)
+    # Add any build steps here, like npm install if you use a build system
+    # For simple static HTML, CSS, and JS websites, you can skip this
+
+    # Upload static content to Azure Blob Storage
+    - name: Deploy to Azure Blob Storage
+      uses: azure/CLI@v1
+      with:
+        inlineScript: |
+          # Install Azure CLI Static Website extension
+          az extension add --name storage-preview
+          
+          # Upload the static files to the $web container in your storage account
+          az storage blob upload-batch \
+            --account-name ${{ secrets.AZURE_STORAGE_ACCOUNT_NAME }} \
+            --account-key ${{ secrets.AZURE_STORAGE_ACCOUNT_KEY }} \
+            --destination \$web \
+            --source . \
+            --overwrite
+
+    # Verify deployment (optional)
+    - name: Verify Deployment
+      run: |
+        echo "Website deployed successfully to Azure Storage Account: ${{ secrets.AZURE_STORAGE_ACCOUNT_NAME }}"
